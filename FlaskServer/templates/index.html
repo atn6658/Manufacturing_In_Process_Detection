@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{url_for('static',filename='output.css')}}" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div class="h-full border-2 border-gray-200 
+    border-opacity-60 rounded-lg 
+    overflow-hidden">
+    <div class="p-6 hover:bg-blue-600 
+            hover:text-white transition 
+            duration-10z00 ease-in">
+        <p class="text-sm text-gray-700">Welcome to the Flask Server</p>
+    </div>
+
+    <h1>Upload a File</h1>
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+        <input type="file" name="files[]" multiple>
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html>
