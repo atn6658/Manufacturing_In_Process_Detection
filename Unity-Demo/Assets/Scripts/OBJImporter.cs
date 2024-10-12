@@ -1,4 +1,5 @@
 using Dummiesman;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -10,8 +11,10 @@ public class OBJImporter : MonoBehaviour
 {
     public TMPro.TMP_InputField FilePathInput;
     public List<GameObject> ImportedObjects;
+    public GameObject SelectedObject;
 
     int ObjectCounter = 1;
+    String fileContent = string.Empty;
 
     void Start()
     {
@@ -33,13 +36,24 @@ public class OBJImporter : MonoBehaviour
         {
             GameObject loadedObject = null;
             if (filePath.StartsWith("http") || filePath.StartsWith("https"))
-                loadedObject = new OBJLoader().Load(GetStreamFromURL(filePath));
-            // else if (File.Exists(filePath))
-            //     loadedObject = new OBJLoader().Load(filePath);
+            {
+                StartCoroutine(GetStreamFromURL(filePath));
+                loadedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(fileContent)));
+            }
             else
-                throw new System.Exception("File not found.");
+            {
+                throw new Exception("Only HTTP/HTTPS URLs are supported for now.");
+            }
+            // {
+            //     string completePath = Application.streamingAssetsPath + "/" + filePath;
+            //     Debug.Log("Loading file from: " + completePath);
+            //     StartCoroutine(GetStreamFromURL(completePath));
+            //     loadedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(fileContent)));
+            // }
             // set the object's name
             loadedObject.name = "ImportedObject" + ObjectCounter++;
+            // scale down object to mm
+            loadedObject.transform.localScale *= 0.001f;
             // set the object's parent
             loadedObject.transform.SetParent(transform);
             // add the object to the list
@@ -54,13 +68,22 @@ public class OBJImporter : MonoBehaviour
         FilePathInput.text = string.Empty;
     }
 
-    MemoryStream GetStreamFromURL(string url)
+    IEnumerator GetStreamFromURL(string url)
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        var www = new WWW(url);
-#pragma warning restore CS0618 // Type or member is obsolete
-        while (!www.isDone)
-            System.Threading.Thread.Sleep(1);
-        return new MemoryStream(Encoding.UTF8.GetBytes(www.text));
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            yield return www.SendWebRequest();
+            switch (www.result)
+            {
+                case UnityWebRequest.Result.ConnectionError:
+                case UnityWebRequest.Result.DataProcessingError:
+                case UnityWebRequest.Result.ProtocolError:
+                    Debug.LogError("Error loading model: " + www.error);
+                    break;
+                case UnityWebRequest.Result.Success:
+                    fileContent = www.downloadHandler.text;
+                    break;
+            }
+        }
     }
 }
