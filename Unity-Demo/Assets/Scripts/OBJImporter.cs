@@ -13,6 +13,8 @@ public class OBJImporter : MonoBehaviour
     public SliderTextHelper PitchRotation;
     public SliderTextHelper YawRotation;
 
+    public bool ManualClear = false;
+
     bool KeepCoroutineAlive = true;
     string currentCommand = string.Empty;
     float pollInterval = 0.02f;
@@ -20,17 +22,17 @@ public class OBJImporter : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(PollCommand());
+        // StartCoroutine(PollCommand());
     }
 
     void Update()
     {
-        if (currentCommand == "CLEAR" && modelLoaded)
+        if ((currentCommand == "CLEAR" || ManualClear) && modelLoaded)
         {
             modelLoaded = false;
             Destroy(SelectedObject);
         }
-        else if (currentCommand == "LOAD" && modelLoaded == false)
+        else if ((currentCommand == "LOAD") && modelLoaded == false)
         {
             modelLoaded = true;
             StartCoroutine(LoadModel());
@@ -65,6 +67,7 @@ public class OBJImporter : MonoBehaviour
                     break;
                 case UnityWebRequest.Result.Success:
                     SelectedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(www.downloadHandler.text)));
+                    SelectedObject.transform.localScale *= 0.001f;
                     break;
             }
         }
