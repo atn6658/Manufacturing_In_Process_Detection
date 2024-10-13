@@ -1,10 +1,16 @@
 import os
 
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
+from flask_cors import CORS
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
+    CORS(app)
+
+    with open('FlaskServer/jank/command.txt', 'w') as file:
+        file.write('')
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
@@ -78,7 +84,7 @@ def create_app(test_config=None):
             
         return "Success"
     
-    @app.route('/jankcommands', methods=['POST'])
+    @app.route('/janksendcommand', methods=['POST'])
     def jank_commands():
         request_data = request.get_json()
             
@@ -94,11 +100,17 @@ def create_app(test_config=None):
             
         return send_file(file_path, as_attachment=False)
     
-    @app.route('/jankcommandselection', methods=['POST', 'GET'])
+    @app.route('/jankcommand', methods=['POST', 'GET'])
     def jank_command_selection():
         # read filedata.txt from FlaskServer/jank
         file_path = os.path.join('jank', "command.txt")
             
         return send_file(file_path, as_attachment=False)
-
+    
+    # Route to serve Unity WebGL build
+    @app.route('/unity', methods=['GET'])
+    def unity():
+        # This renders the iframe for Unity's WebGL index page
+        return render_template('unity_embed.html')
+    
     return app

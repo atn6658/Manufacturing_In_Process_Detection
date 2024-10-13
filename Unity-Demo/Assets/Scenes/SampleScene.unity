@@ -495,6 +495,7 @@ MonoBehaviour:
   RollRotation: {fileID: 47158361}
   PitchRotation: {fileID: 278179501}
   YawRotation: {fileID: 1590176317}
+  SelectedFileName: 
 --- !u!1 &206698178
 GameObject:
   m_ObjectHideFlags: 0
@@ -1468,7 +1469,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.30070576, y: 0, z: 0, w: 0.953717}
-  m_LocalPosition: {x: 0, y: 1, z: -1}
+  m_LocalPosition: {x: 0, y: 0.5, z: -0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
