@@ -25,6 +25,7 @@
 
 <!-- Sidebar -->
 <!-- Sidebar -->
+<!-- Sidebar -->
 <section class="fixed top-[5.5rem] left-0 w-64 h-[calc(100%-5.5rem)] bg-gray-900 text-white p-5">
     <h2 class="text-orange-400 text-xl font-semibold border-b-2 border-white w-full pb-2">Models</h2>
     <ul class="mt-4 space-y-2">
@@ -32,7 +33,7 @@
             <button class="w-full text-left text-lg flex justify-between items-center branch-toggle text-white">
                 Model 1 <span class="toggle-icon">▼</span>
             </button>
-            <ul class="pl-4 mt-2 sub-branch hidden"> <!-- Hide by default -->
+            <ul class="pl-4 mt-2 sub-branch hidden">
                 <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Process 1</a></li>
                 <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Operation 2</a></li>
                 <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Operation 3</a></li>
@@ -45,10 +46,10 @@
     // Toggle the dropdown menu
     document.querySelectorAll('.branch-toggle').forEach(button => {
         button.addEventListener('click', function() {
-            const subBranch = this.nextElementSibling; // Get the sub-branch <ul>
-            subBranch.classList.toggle('hidden'); // Toggle the 'hidden' class
+            const subBranch = this.nextElementSibling;
+            subBranch.classList.toggle('hidden');
             const toggleIcon = this.querySelector('.toggle-icon');
-            toggleIcon.textContent = subBranch.classList.contains('hidden') ? '▼' : '▲'; // Change the icon
+            toggleIcon.textContent = subBranch.classList.contains('hidden') ? '▼' : '▲';
         });
     });
 </script>
@@ -88,18 +89,18 @@
 
 <style>
     .tooltip {
-        display: none; /* Hide tooltips by default */
+        display: none;
     }
-    /* Show tooltip on hover */
     .group:hover .tooltip {
-        display: block; /* Show tooltip when the button is hovered */
+        display: block;
     }
 </style>
 
 <!-- Content Section -->
-<section class="fixed top-40 left-64 w-[calc(100%-16rem)] h-[calc(100%-10rem)] overflow-auto p-10 bg-white">
+<section class="absolute top-[8.5rem] left-64 w-[calc(100%-16rem)] h-[calc(100%-8.5rem)] overflow-auto p-10 bg-[#c1c7c9] border-t border-gray-500">
     <p class="text-lg">This is the content area where all the information will be displayed.</p>
 </section>
+
 
 <!-- Settings Modal -->
 <div class="modal" id="settingsModal">
