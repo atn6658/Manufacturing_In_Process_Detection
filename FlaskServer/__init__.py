@@ -69,14 +69,31 @@ def create_app(test_config=None):
             file.write(request_data['filename'] + '\n')
             file.write(file_content)
             
+        with open('FlaskServer/jank/command.txt', 'w') as file:
+            file.write("LOAD")
+            
+        return "Success"
+    
+    @app.route('/jankcommands', methods=['POST'])
+    def jank_commands():
+        request_data = request.get_json()
+            
+        with open('FlaskServer/jank/command.txt', 'w') as file:
+            file.write(request_data['command'])
+            
         return "Success"
     
     @app.route('/jankfileselection', methods=['POST', 'GET'])
     def jank_file_selection():
         # read filedata.txt from FlaskServer/jank
         file_path = os.path.join('jank', "filedata.txt")
-        # with open(file_path, 'r') as file:
-        #     file_content = file.read()
+            
+        return send_file(file_path, as_attachment=False)
+    
+    @app.route('/jankcommandselection', methods=['POST', 'GET'])
+    def jank_command_selection():
+        # read filedata.txt from FlaskServer/jank
+        file_path = os.path.join('jank', "command.txt")
             
         return send_file(file_path, as_attachment=False)
 
