@@ -22,6 +22,10 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+    
+    UPLOAD_FOLDER = 'Unity-Demo/demo/StreamingAssets/'
+    # if not os.path.exists('FlaskServer/' + UPLOAD_FOLDER):
+    #     os.makedirs('FlaskServer/' + UPLOAD_FOLDER)
 
     # Index Page
     @app.route('/', methods=['GET', 'POST'])
@@ -32,18 +36,23 @@ def create_app(test_config=None):
     def upload_files():
         files = request.files.getlist('files[]')
         
-        print(files)
-        
         html_content = '<html><body>'
+        
+        for file in os.listdir(UPLOAD_FOLDER):
+            print(f"Removing {file}")
+            os.remove(os.path.join(UPLOAD_FOLDER, file))
         
         for file in files:
             if file.filename == '':
                 continue
             
+            file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+            file.save(file_path)
+            
             # Read file content and write to HTML
             file_content = file.read().decode('utf-8')
             html_content += f'<h2>{file.filename}</h2>'
-            html_content += f'<pre>{file_content}</pre><br>'
+            # html_content += f'<pre>{url_for('download_file', filename=file.filename)}</pre><br>'
         
         html_content += '</body></html>'
         
