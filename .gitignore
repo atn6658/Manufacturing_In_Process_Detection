@@ -13,4 +13,4 @@ docs/_build/
 node_modules
 
 FlaskServer/uploads
-FlaskServer/jank
+FlaskServer/jank/**
