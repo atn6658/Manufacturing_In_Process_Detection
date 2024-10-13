@@ -39,6 +39,11 @@ public class OBJImporter : MonoBehaviour
             modelLoaded = true;
             StartCoroutine(LoadModel());
         }
+        else if (currentCommand == "SAVE" && modelLoaded)
+        {
+            currentCommand = string.Empty;
+            StartCoroutine(SaveModel());
+        }
         else { } // do nothing, catch all
 
         // update the rotation of the object
@@ -96,6 +101,19 @@ public class OBJImporter : MonoBehaviour
                 }
             }
             yield return new WaitForSeconds(pollInterval);
+        }
+    }
+
+    IEnumerator SaveModel()
+    {
+        string jsonString = $"{{ \"file_name\": \"{SelectedFileName}\", \"rotation\": [{SelectedObject.transform.rotation.eulerAngles.x}, {SelectedObject.transform.rotation.eulerAngles.y}, {SelectedObject.transform.rotation.eulerAngles.z}] }}";
+        using (UnityWebRequest www = UnityWebRequest.Post("http://localhost:5000/jankreceive", jsonString, "application/json"))
+        {
+            yield return www.SendWebRequest();
+            if (www.result != UnityWebRequest.Result.Success)
+                Debug.LogError("Error: " + www.error);
+            else
+                Debug.Log("Model saved successfully!");
         }
     }
 

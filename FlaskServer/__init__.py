@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, redirect, url_for, session, send_file
+from flask import Flask, render_template, request, redirect, url_for, session, send_file, jsonify
 from flask_cors import CORS
 
 def create_app(test_config=None):
@@ -99,7 +99,7 @@ def create_app(test_config=None):
         file_path = os.path.join('jank', "filedata.txt")
             
         return send_file(file_path, as_attachment=False)
-    
+
     @app.route('/jankcommand', methods=['POST', 'GET'])
     def jank_command_selection():
         # read filedata.txt from FlaskServer/jank
@@ -112,5 +112,15 @@ def create_app(test_config=None):
     def unity():
         # This renders the iframe for Unity's WebGL index page
         return render_template('unity_embed.html')
+    
+    @app.route('/jankreceive', methods=['POST'])
+    def jank_receive():
+        # clear command.txt
+        with open('FlaskServer/jank/command.txt', 'w') as file:
+            file.write('')
+        # parse response from response
+        with open('FlaskServer/jank/rotations.txt', 'a') as file:
+            file.write(request.data.decode('utf-8').replace('\r', '') + '\n')
+        return send_file('FlaskServer/jank/rotations.txt', as_attachment=True)
     
     return app
