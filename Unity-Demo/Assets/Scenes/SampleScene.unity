@@ -585,8 +585,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FilePathInput: {fileID: 1044124624}
+  PartsDropdown: {fileID: 840075358}
   ImportedObjects: []
   SelectedObject: {fileID: 0}
+  HighlighMaterial: {fileID: 2100000, guid: e4eeebaf21ca827488430ae5d9f06e22, type: 2}
+  DefaultMaterial: {fileID: 2100000, guid: 0a86e1c6f0bbd61419d35276af06e017, type: 2}
 --- !u!1 &206698178
 GameObject:
   m_ObjectHideFlags: 0
@@ -1295,7 +1298,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "http://localhost:56640/StreamingAssets/stock_block_v1.obj\u200B"
+  m_text: "stock_block_v1.obj\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1494,8 +1497,8 @@ RectTransform:
   m_GameObject: {fileID: 840075356}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 137055579}
   - {fileID: 123128858}
@@ -1504,7 +1507,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -875, y: 520}
+  m_AnchoredPosition: {x: -800, y: 510}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &840075358
@@ -1565,7 +1568,19 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 202844208}
+        m_TargetAssemblyTypeName: OBJImporter, Assembly-CSharp
+        m_MethodName: UpdateDropdownTarget
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &840075359
 MonoBehaviour:
@@ -1777,16 +1792,16 @@ RectTransform:
   m_GameObject: {fileID: 1042300783}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1934518490}
   m_Father: {fileID: 577380407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -378, y: -525}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -480, y: -510}
+  m_SizeDelta: {x: 80, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1042300785
 MonoBehaviour:
@@ -1834,7 +1849,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 202844208}
         m_TargetAssemblyTypeName: OBJImporter, Assembly-CSharp
-        m_MethodName: LoadModel
+        m_MethodName: InvokeLoadModel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1910,16 +1925,16 @@ RectTransform:
   m_GameObject: {fileID: 1044124622}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1038675817}
   m_Father: {fileID: 577380407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -709.1, y: -525}
-  m_SizeDelta: {x: 500, y: 30}
+  m_AnchoredPosition: {x: -760, y: -510}
+  m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1044124624
 MonoBehaviour:
@@ -2007,7 +2022,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: http://localhost:56640/StreamingAssets/stock_block_v1.obj
+  m_Text: stock_block_v1.obj
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -2529,7 +2544,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Load Model
+  m_text: 'Load
 
 '
   m_isRightToLeft: 0
