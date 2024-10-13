@@ -66,6 +66,7 @@ def create_app(test_config=None):
             file_content = file.read()
             
         with open('FlaskServer/jank/filedata.txt', 'w') as file:
+            file.write(request_data['filename'] + '\n')
             file.write(file_content)
             
         return "Success"
