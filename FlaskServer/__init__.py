@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, session, send_file
 
 def create_app(test_config=None):
     # create and configure the app
@@ -23,39 +23,60 @@ def create_app(test_config=None):
     except OSError:
         pass
     
-    UPLOAD_FOLDER = 'Unity-Demo/demo/StreamingAssets/'
-    # if not os.path.exists('FlaskServer/' + UPLOAD_FOLDER):
-    #     os.makedirs('FlaskServer/' + UPLOAD_FOLDER)
+    UPLOAD_FOLDER = 'uploads/'
+    if not os.path.exists('FlaskServer/' + UPLOAD_FOLDER):
+        os.makedirs('FlaskServer/' + UPLOAD_FOLDER)
 
     # Index Page
     @app.route('/', methods=['GET', 'POST'])
     def index():
-        return render_template("index.html")
+        files = session.get('files', [])
+        return render_template("index.html", files=files)
     
     @app.route('/upload', methods=['POST'])
     def upload_files():
         files = request.files.getlist('files[]')
+        file_names = []
         
-        html_content = '<html><body>'
-        
-        for file in os.listdir(UPLOAD_FOLDER):
+        for file in os.listdir('FlaskServer/' + UPLOAD_FOLDER):
             print(f"Removing {file}")
-            os.remove(os.path.join(UPLOAD_FOLDER, file))
+            os.remove(os.path.join('FlaskServer/' + UPLOAD_FOLDER, file))
         
         for file in files:
             if file.filename == '':
                 continue
             
-            file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+            file_path = os.path.join('FlaskServer/' + UPLOAD_FOLDER, file.filename)
             file.save(file_path)
             
-            # Read file content and write to HTML
-            file_content = file.read().decode('utf-8')
-            html_content += f'<h2>{file.filename}</h2>'
-            # html_content += f'<pre>{url_for('download_file', filename=file.filename)}</pre><br>'
+            file_names.append(file.filename)
+            
+        session['files'] = file_names
         
-        html_content += '</body></html>'
+        return redirect(url_for('index'))
+    
+    @app.route('/jankfiles', methods=['POST'])
+    def jank_files():
+        request_data = request.get_json()
         
-        return html_content
+        # Write to filedata.txt in FlaskServer/jank from file in FlaskServer/uploads
+        file_path = os.path.join('FlaskServer/' + UPLOAD_FOLDER, request_data['filename'])
+        
+        with open(file_path, 'r') as file:
+            file_content = file.read()
+            
+        with open('FlaskServer/jank/filedata.txt', 'w') as file:
+            file.write(file_content)
+            
+        return "Success"
+    
+    @app.route('/jankfileselection', methods=['POST', 'GET'])
+    def jank_file_selection():
+        # read filedata.txt from FlaskServer/jank
+        file_path = os.path.join('jank', "filedata.txt")
+        # with open(file_path, 'r') as file:
+        #     file_content = file.read()
+            
+        return send_file(file_path, as_attachment=False)
 
     return app
