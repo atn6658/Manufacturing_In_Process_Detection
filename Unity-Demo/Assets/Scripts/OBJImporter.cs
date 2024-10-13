@@ -1,7 +1,5 @@
 using Dummiesman;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -9,68 +7,57 @@ using UnityEngine.Networking;
 
 public class OBJImporter : MonoBehaviour
 {
-    public TMPro.TMP_InputField FilePathInput;
-    public List<GameObject> ImportedObjects;
     public GameObject SelectedObject;
 
-    int ObjectCounter = 1;
-    String fileContent = string.Empty;
+    public SliderTextHelper RollRotation;
+    public SliderTextHelper PitchRotation;
+    public SliderTextHelper YawRotation;
+
+    public string SelectedFileName = string.Empty;
+    // public bool ManualClear = false;
+
+    bool KeepCoroutineAlive = true;
+    string currentCommand = string.Empty;
+    float pollInterval = 0.02f;
+    bool modelLoaded = false;
 
     void Start()
     {
-        ImportedObjects = new List<GameObject>();
+        StartCoroutine(PollCommand());
     }
 
     void Update()
     {
+        if ((currentCommand == "CLEAR") && modelLoaded)
+        {
+            modelLoaded = false;
+            Destroy(SelectedObject);
+            SelectedObject = null;
+        }
+        else if (currentCommand == "LOAD" && modelLoaded == false)
+        {
+            modelLoaded = true;
+            StartCoroutine(LoadModel());
+        }
+        else { } // do nothing, catch all
+
+        // update the rotation of the object
+        // only if the object is loaded
+        if (SelectedObject != null)
+            SelectedObject.transform.rotation = Quaternion.Euler(RollRotation.GetSliderValue(), PitchRotation.GetSliderValue(), YawRotation.GetSliderValue());
     }
 
-    public void LoadModel()
+    IEnumerator LoadModel()
     {
-        string filePath = FilePathInput.text;
-        // trim leading and ending quotes and spaces
-        filePath = filePath.Trim('"').Trim();
-        // attempt to load the model
-        // silently aborting if error at any point
-        try
-        {
-            GameObject loadedObject = null;
-            if (filePath.StartsWith("http") || filePath.StartsWith("https"))
-            {
-                StartCoroutine(GetStreamFromURL(filePath));
-                loadedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(fileContent)));
-            }
-            else
-            {
-                throw new Exception("Only HTTP/HTTPS URLs are supported for now.");
-            }
-            // {
-            //     string completePath = Application.streamingAssetsPath + "/" + filePath;
-            //     Debug.Log("Loading file from: " + completePath);
-            //     StartCoroutine(GetStreamFromURL(completePath));
-            //     loadedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(fileContent)));
-            // }
-            // set the object's name
-            loadedObject.name = "ImportedObject" + ObjectCounter++;
-            // scale down object to mm
-            loadedObject.transform.localScale *= 0.001f;
-            // set the object's parent
-            loadedObject.transform.SetParent(transform);
-            // add the object to the list
-            ImportedObjects.Add(loadedObject);
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("Error loading model: " + e.Message);
-            return;
-        }
-        // clear the input field
-        FilePathInput.text = string.Empty;
-    }
+        // destroy previous object
+        if (SelectedObject != null) Destroy(SelectedObject);
 
-    IEnumerator GetStreamFromURL(string url)
-    {
-        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        // reset all the sliders
+        RollRotation.TargetSlider.value = 0;
+        PitchRotation.TargetSlider.value = 0;
+        YawRotation.TargetSlider.value = 0;
+
+        using (UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/jankfileselection"))
         {
             yield return www.SendWebRequest();
             switch (www.result)
@@ -78,12 +65,42 @@ public class OBJImporter : MonoBehaviour
                 case UnityWebRequest.Result.ConnectionError:
                 case UnityWebRequest.Result.DataProcessingError:
                 case UnityWebRequest.Result.ProtocolError:
-                    Debug.LogError("Error loading model: " + www.error);
+                    Debug.LogError("Error: " + www.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    fileContent = www.downloadHandler.text;
+                    SelectedFileName = www.downloadHandler.text.Split('\n')[0];
+                    SelectedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(www.downloadHandler.text)));
+                    SelectedObject.transform.localScale *= 0.001f;
                     break;
             }
         }
+    }
+
+    IEnumerator PollCommand()
+    {
+        while (true && KeepCoroutineAlive)
+        {
+            using (UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/jankcommand"))
+            {
+                yield return www.SendWebRequest();
+                switch (www.result)
+                {
+                    case UnityWebRequest.Result.ConnectionError:
+                    case UnityWebRequest.Result.DataProcessingError:
+                    case UnityWebRequest.Result.ProtocolError:
+                        Debug.LogError("Error: " + www.error);
+                        break;
+                    case UnityWebRequest.Result.Success:
+                        currentCommand = www.downloadHandler.text;
+                        break;
+                }
+            }
+            yield return new WaitForSeconds(pollInterval);
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        KeepCoroutineAlive = false;
     }
 }
