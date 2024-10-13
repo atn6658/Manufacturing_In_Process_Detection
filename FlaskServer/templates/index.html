@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Layout with Multiple Modals</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Londrina+Sketch&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script> 
     <style>
         /* Modal Background */
         .modal {
@@ -21,54 +22,57 @@
 </head>
 <body class="h-screen bg-gray-100 overflow-hidden">
 
-    <!-- Sidebar -->
-    <section class="fixed top-20 left-0 w-64 h-full bg-gray-900 text-white p-5">
-        <h2 class="text-orange-400 text-xl font-semibold">Models</h2>
-        <ul class="mt-4 space-y-2">
-            <li>
-                <button class="w-full text-left text-lg flex justify-between items-center branch-toggle">
-                    Model 1
-                    <span>▼</span>
-                </button>
-                <ul class="pl-4 mt-2 hidden sub-branch">
-                    <li><a href="#" class="block py-1 hover:underline">Process 1</a></li>
-                    <li><a href="#" class="block py-1 hover:underline">Op 2</a></li>
-                    <li><a href="#" class="block py-1 hover:underline">Op 3</a></li>
-                </ul>
-            </li>
-        </ul>
-    </section>
+ <!-- Sidebar -->
+<section class="fixed top-[5.5rem] left-0 w-64 h-[calc(100%-5.5rem)] bg-gray-900 text-white p-5">
+    <h2 class="text-orange-400 text-xl font-semibold border-b-2 border-white w-full pb-2">Models</h2>
+    <ul class="mt-4 space-y-2">
+        <li>
+            <button class="w-full text-left text-lg flex justify-between items-center branch-toggle text-white">
+                Model 1
+                <span>▼</span>
+            </button>
+            <ul class="pl-4 mt-2 hidden sub-branch">
+                <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Process 1</a></li>
+                <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Op 2</a></li>
+                <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Op 3</a></li>
+            </ul>
+        </li>
+    </ul>
+</section>
 
-    <!-- Project Title (Fixed) -->
-    <section class="fixed top-0 w-full bg-white z-20 p-5 border-b border-gray-300">
-        <h1 class="text-2xl font-bold">Manufacturing In-Progress Detection</h1>
-    </section>
+<!-- Project Title (Fixed) -->
+<section class="fixed top-0 w-full bg-white z-20 p-5 border-b border-gray-300">
+    <h1 style="font-family: 'Londrina Sketch', cursive;" class="text-5xl font-bold text-orange-400">
+        Manufacturing In-Progress Detection
+    </h1>
+</section>
 
-    <!-- Top Bar (Fixed) -->
-    <section class="fixed top-20 left-64 w-[calc(100%-16rem)] bg-gray-700 text-white p-3 z-20 border-b border-gray-500">
-        <div class="flex justify-between items-center">
-            <!-- Settings Button -->
-            <button id="settingsButton" class="relative flex items-center justify-center w-10 h-10 group">
-                <img src="/static/pictures/thin-line-settings-gear-icon-vector-17698859.jpg" alt="Settings" class="w-6 h-6">
-                <span class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">Settings</span>
+<!-- Top Bar (Fixed) -->
+<section class="fixed top-[5.5rem] left-64 w-[calc(100%-16rem)] bg-gray-700 text-white p-3 z-20 border-b border-gray-500">
+    <div class="flex justify-between items-center">
+        <!-- Left Section: Settings Button -->
+        <button id="settingsButton" class="relative flex items-center justify-center w-10 h-10 group">
+            <img src="/static/pictures/setting logo.png" alt="Settings" class="w-6 h-6">
+            <span class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">Settings</span>
+        </button>
+
+        <!-- Right Section: Icons -->
+        <div class="flex space-x-4">
+            <!-- Save Button -->
+            <button id="saveButton" class="relative flex items-center justify-center w-10 h-10 group">
+                <img src="/static/pictures/save logo.png" alt="Save" class="w-6 h-6">
+                <span class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">Save</span>
             </button>
 
-            <div class="flex">
-                <!-- Save Button -->
-                <button id="saveButton" class="relative flex items-center justify-center w-10 h-10 group">
-                    <img src="/static/pictures/0_MqZQiPMgmDTNGEnD.jpg" alt="Save" class="w-6 h-6">
-                    <span class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">Save</span>
-                </button>
-
-                <!-- Upload Button -->
-                <button id="uploadButton" class="relative flex items-center justify-center w-10 h-10 group">
-                    <img src="/static/pictures/images.png" alt="Upload" class="w-6 h-6">
-                    <span class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">Upload</span>
-                </button>
-            </div>
+            <!-- Upload Button -->
+            <button id="uploadButton" class="relative flex items-center justify-center w-10 h-10 group">
+                <img src="/static/pictures/Upload logo.png" alt="Upload" class="w-6 h-6">
+                <span class="absolute bottom-full mb-1 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-sm rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">Upload</span>
+            </button>
         </div>
-    </section>
-    
+    </div>
+</section>
+
     <!-- Content Section (Fixed) -->
     <section class="fixed top-40 left-64 w-[calc(100%-16rem)] h-[calc(100%-10rem)] overflow-auto p-10 bg-white">
         <p class="text-lg">This is the content area where all the information will be displayed.</p>
