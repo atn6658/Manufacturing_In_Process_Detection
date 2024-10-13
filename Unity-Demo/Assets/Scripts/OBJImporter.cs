@@ -13,6 +13,7 @@ public class OBJImporter : MonoBehaviour
     public SliderTextHelper PitchRotation;
     public SliderTextHelper YawRotation;
 
+    public string SelectedFileName = string.Empty;
     public bool ManualClear = false;
 
     bool KeepCoroutineAlive = true;
@@ -66,6 +67,7 @@ public class OBJImporter : MonoBehaviour
                     Debug.LogError("Error: " + www.error);
                     break;
                 case UnityWebRequest.Result.Success:
+                    SelectedFileName = www.downloadHandler.text.Split('\n')[0];
                     SelectedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(www.downloadHandler.text)));
                     SelectedObject.transform.localScale *= 0.001f;
                     break;
