@@ -34,9 +34,9 @@
                 Model 1 <span class="toggle-icon">▼</span>
             </button>
             <ul class="pl-4 mt-2 sub-branch hidden"> <!-- Hide by default -->
-                <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Process 1</a></li>
+                <!-- <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Process 1</a></li>
                 <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Operation 2</a></li>
-                <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Operation 3</a></li>
+                <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Operation 3</a></li> -->
                 <li>
                     {% for file in files %}
                         <li><button name="file" value="{{file}}" class="block py-1 hover:underline hover:text-orange-400">{{file}}</button></li>
@@ -75,6 +75,13 @@
             <span class="tooltip hidden absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded p-1">Settings</span>
         </div>
         <div class="flex space-x-4">
+            <div class="relative group">
+                <button id="clearButton" class="w-10 h-10">
+                    <!-- <img src="/static/pictures/save logo.png" alt="Clear" class="w-6 h-6"> -->
+                    <img src="/static/pictures/setting logo.png" alt="Settings" class="w-6 h-6">
+                </button>
+                <span class="tooltip hidden absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded p-1">Clear</span>
+            </div>
             <div class="relative group">
                 <button id="saveButton" class="w-10 h-10">
                     <img src="/static/pictures/save logo.png" alt="Save" class="w-6 h-6">
@@ -203,6 +210,7 @@
     setupModal('settingsButton', 'settingsModal', 'closeSettingsModal');
     setupModal('saveButton', 'saveModal', 'closeSaveModal');
     setupModal('uploadButton', 'uploadModal', 'closeUploadModal');
+    setupModal('clearButton', 'clearModal', 'closeClearModal');
 
     // File Input Handling
     const fileInput = document.getElementById('fileInput');
@@ -236,6 +244,27 @@
                 console.error('Error:', error);
             });
         })
+    });
+</script>
+
+<script>
+    // Add event listener to all buttons
+    document.getElementById('clearButton').addEventListener('click', event => {
+        // Send filename to flask endpoint
+        fetch('/janksendcommand', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({command: 'CLEAR'}),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
     });
 </script>
 
