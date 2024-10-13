@@ -1,7 +1,5 @@
 using Dummiesman;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -9,45 +7,53 @@ using UnityEngine.Networking;
 
 public class OBJImporter : MonoBehaviour
 {
-    public TMPro.TMP_InputField FilePathInput;
-    public TMPro.TMP_Dropdown PartsDropdown;
-    public List<GameObject> ImportedObjects;
     public GameObject SelectedObject;
-    public Material HighlighMaterial;
-    public Material DefaultMaterial;
 
-    int ObjectCounter = 1;
+    public SliderTextHelper RollRotation;
+    public SliderTextHelper PitchRotation;
+    public SliderTextHelper YawRotation;
+
+    bool KeepCoroutineAlive = true;
+    string currentCommand = string.Empty;
+    float pollInterval = 0.02f;
+    bool modelLoaded = false;
 
     void Start()
     {
-        ImportedObjects = new List<GameObject>();
-        PartsDropdown.ClearOptions();
+        StartCoroutine(PollCommand());
     }
 
     void Update()
     {
+        if (currentCommand == "CLEAR" && modelLoaded)
+        {
+            modelLoaded = false;
+            Destroy(SelectedObject);
+        }
+        else if (currentCommand == "LOAD" && modelLoaded == false)
+        {
+            modelLoaded = true;
+            StartCoroutine(LoadModel());
+        }
+        else { } // do nothing, catch all
+
+        // update the rotation of the object
+        // only if the object is loaded
+        if (SelectedObject != null)
+            SelectedObject.transform.rotation = Quaternion.Euler(RollRotation.GetSliderValue(), PitchRotation.GetSliderValue(), YawRotation.GetSliderValue());
     }
 
-//     IEnumerator LoadModel()
-//     {
-//         string completePath = Application.streamingAssetsPath + "/" + FilePathInput.text;
-//         Debug.Log("Loading file from: " + completePath);
-// #pragma warning disable CS0618 // Type or member is obsolete
-//         using (var www = new WWW(completePath))
-//         {
-//             yield return www;
-//             var stream = new MemoryStream(Encoding.UTF8.GetBytes(www.text));
-//             var loadedObject = new OBJLoader().Load(stream);
-//         }
-// #pragma warning restore CS0618 // Type or member is obsolete
-//     }
-
-    public void InvokeLoadModel() => StartCoroutine(LoadModel((Application.streamingAssetsPath + "/" + FilePathInput.text).Trim('"').Trim()));
-
-    IEnumerator LoadModel(string URL)
+    IEnumerator LoadModel()
     {
-        Debug.Log("Loading file from: " + URL);
-        using (UnityWebRequest www = UnityWebRequest.Get(URL))
+        // destroy previous object
+        if (SelectedObject != null) Destroy(SelectedObject);
+
+        // reset all the sliders
+        RollRotation.TargetSlider.value = 0;
+        PitchRotation.TargetSlider.value = 0;
+        YawRotation.TargetSlider.value = 0;
+
+        using (UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/jankfileselection"))
         {
             yield return www.SendWebRequest();
             switch (www.result)
@@ -58,58 +64,37 @@ public class OBJImporter : MonoBehaviour
                     Debug.LogError("Error: " + www.error);
                     break;
                 case UnityWebRequest.Result.Success:
-                    string content = www.downloadHandler.text;
-                    var textStream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-                    var loadedObject = new OBJLoader().Load(textStream);
-                    // set scale to mm
-                    loadedObject.transform.localScale *= 0.001f;
-                    // rename object
-                    loadedObject.name = Path.GetFileNameWithoutExtension(FilePathInput.text) + "_" + ObjectCounter++;
-                    // set object parent
-                    loadedObject.transform.SetParent(transform);
-                    // apply default material
-                    foreach (var renderer in loadedObject.GetComponentsInChildren<MeshRenderer>())
-                        renderer.material = DefaultMaterial;
-                    // add to list
-                    ImportedObjects.Add(loadedObject);
+                    SelectedObject = new OBJLoader().Load(new MemoryStream(Encoding.UTF8.GetBytes(www.downloadHandler.text)));
                     break;
             }
         }
-
-        // clear the input field
-        // FilePathInput.text = string.Empty;
-
-        // update dropdown
-        UpdateDropdown();
     }
 
-    void UpdateDropdown()
+    IEnumerator PollCommand()
     {
-        PartsDropdown.ClearOptions();
-        // skip if no objects are imported
-        if (ImportedObjects.Count == 0) return;
-        // get object names
-        List<string> objectNames = new List<string>();
-        foreach (var obj in ImportedObjects)
+        while (true && KeepCoroutineAlive)
         {
-            objectNames.Add(obj.name);
+            using (UnityWebRequest www = UnityWebRequest.Get("http://localhost:5000/jankcommand"))
+            {
+                yield return www.SendWebRequest();
+                switch (www.result)
+                {
+                    case UnityWebRequest.Result.ConnectionError:
+                    case UnityWebRequest.Result.DataProcessingError:
+                    case UnityWebRequest.Result.ProtocolError:
+                        Debug.LogError("Error: " + www.error);
+                        break;
+                    case UnityWebRequest.Result.Success:
+                        currentCommand = www.downloadHandler.text;
+                        break;
+                }
+            }
+            yield return new WaitForSeconds(pollInterval);
         }
-        // update dropdown
-        PartsDropdown.AddOptions(objectNames);
-        // update option if it's the first object
-        if (ImportedObjects.Count == 1)
-            SelectedObject = ImportedObjects[0];
     }
 
-    public void UpdateDropdownTarget()
+    void OnApplicationQuit()
     {
-        // reset color of previous object
-        if (SelectedObject != null)
-            foreach (var renderer in SelectedObject.GetComponentsInChildren<MeshRenderer>())
-                renderer.material = DefaultMaterial;
-        SelectedObject = ImportedObjects[PartsDropdown.value];
-        // highlight selected object
-        foreach (var renderer in SelectedObject.GetComponentsInChildren<MeshRenderer>())
-            renderer.material = HighlighMaterial;
+        KeepCoroutineAlive = false;
     }
 }
