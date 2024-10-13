@@ -26,6 +26,10 @@ def create_app(test_config=None):
     UPLOAD_FOLDER = 'uploads/'
     if not os.path.exists('FlaskServer/' + UPLOAD_FOLDER):
         os.makedirs('FlaskServer/' + UPLOAD_FOLDER)
+        
+    JANK_FOLDER = 'jank/'
+    if not os.path.exists('FlaskServer/' + JANK_FOLDER):
+        os.makedirs('FlaskServer/' + JANK_FOLDER)
 
     # Index Page
     @app.route('/', methods=['GET', 'POST'])

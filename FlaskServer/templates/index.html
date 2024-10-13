@@ -33,9 +33,14 @@
                 Model 1 <span class="toggle-icon">▼</span>
             </button>
             <ul class="pl-4 mt-2 sub-branch hidden"> <!-- Hide by default -->
-                <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Process 1</a></li>
+                <!-- <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Process 1</a></li>
                 <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Operation 2</a></li>
                 <li><a href="#" class="block py-1 hover:underline hover:text-orange-400">Operation 3</a></li>
+                <li> -->
+                    {% for file in files %}
+                        <li><button name="file" value="{{file}}" class="block py-1 hover:underline hover:text-orange-400">{{file}}</button></li>
+                    {% endfor %}
+                </li>
             </ul>
         </li>
     </ul>
@@ -130,10 +135,10 @@
                 <input type="file" name="files[]" multiple id="fileInput">
                 <ul id="fileList" class="mt-2"></ul> <!-- List to show selected files -->
                 
+                <input type="submit" value="Upload" class="mt-2 bg-green-600 text-white px-4 py-2 rounded">
+                <button id="closeUploadModal" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Close</button>
             </form>
             <!-- fill in code here -->
-            <input type="submit" value="Upload" class="mt-2 bg-green-600 text-white px-4 py-2 rounded">
-            <button id="closeUploadModal" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Close</button>
         </div>
     </div>
 </div>
@@ -188,6 +193,29 @@
         fileList.innerHTML = files.length
             ? files.map(file => `<li class="text-gray-700 py-1 border-b border-gray-300">${file.name}</li>`).join('')
             : '<li class="text-gray-500">No files selected</li>';
+    });
+</script>
+
+<script>
+    // Add event listener to all buttons
+    document.querySelectorAll('button').forEach(item => {
+        item.addEventListener('click', event => {
+            // Send filename to flask endpoint
+            fetch('/jankfiles', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({filename: item.value}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        })
     });
 </script>
 
