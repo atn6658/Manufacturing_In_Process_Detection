@@ -14,7 +14,7 @@ public class OBJImporter : MonoBehaviour
     public SliderTextHelper YawRotation;
 
     public string SelectedFileName = string.Empty;
-    public bool ManualClear = false;
+    // public bool ManualClear = false;
 
     bool KeepCoroutineAlive = true;
     string currentCommand = string.Empty;
@@ -23,17 +23,18 @@ public class OBJImporter : MonoBehaviour
 
     void Start()
     {
-        // StartCoroutine(PollCommand());
+        StartCoroutine(PollCommand());
     }
 
     void Update()
     {
-        if ((currentCommand == "CLEAR" || ManualClear) && modelLoaded)
+        if ((currentCommand == "CLEAR") && modelLoaded)
         {
             modelLoaded = false;
             Destroy(SelectedObject);
+            SelectedObject = null;
         }
-        else if ((currentCommand == "LOAD") && modelLoaded == false)
+        else if (currentCommand == "LOAD" && modelLoaded == false)
         {
             modelLoaded = true;
             StartCoroutine(LoadModel());
